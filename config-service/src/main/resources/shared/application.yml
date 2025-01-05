@@ -1,0 +1,91 @@
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+        timeout:
+          enabled: false
+
+ribbon:
+  ConnectTimeout: ${RIBBON_CONNECT_TIMEOUT:100000}
+  ReadTimeout: ${RIBBON_READ_TIMEOUT:100000}
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: ${FEIGN_DEFAULT_CONNECT_TIMEOUT:30000}
+        readTimeout: ${FEIGN_DEFAULT_READ_TIMEOUT:60000}
+        loggerLevel: basic
+
+config-property:
+  enabled: true
+  jdbc:
+    url: jdbc:postgresql://localhost:5432/ludomarkt_db
+    username: ludomarkt38
+    password: ludomarkt38
+    driver-class-name: org.postgresql.Driver
+
+cache:
+  cluster-name: ${HZ_CLUSTER_NAME:ludomarkt-hz}
+  address: ${HZ_CLUSTER_ADDRESS:localhost:5701}
+  cluster-connect-timeout: ${HZ_CLUSTER_CONNECT_TIMEOUT:5000}
+
+config-log:
+  enabled: true
+
+config-handler:
+  enabled: true
+
+client:
+  auth:
+    service:
+      url: ${SERVICE_URL_AUTH:http://localhost:9003}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stable
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prp
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+---
+
+

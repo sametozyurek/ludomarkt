@@ -1,0 +1,50 @@
+server:
+  port: ${PORT:8088}
+
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: ${GLOBAL_CORS_ALLOWED_ORIGINS:http://localhost:4200}
+            allowedHeaders: ${GLOBAL_CORS_ALLOWED_HEADERS:*}
+            allowedMethods: ${GLOBAL_CORS_ALLOWED_METHODS:*}
+            allow-credentials: ${GLOBAL_CORS_ALLOW_CREDENTIALS:true}
+      routes:
+        - id: auth-service
+          uri: ${SERVICE_URL_AUTH:http://localhost:9003}
+          predicates:
+            - Path=/auth-api/**
+          filters:
+            - RewritePath=/(?<segment>.*), /$\{segment}
+auth:
+  validate:
+    url: ${AUTH_VALIDATE_URL:http://localhost:9003/auth-api/auth/validate}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stable
+
+server:
+  port: ${PORT:8080}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prp
+
+server:
+  port: ${PORT:8080}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: ${PORT:8080}

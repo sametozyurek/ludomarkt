@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:17.2-alpine3.21
+    restart: always
+    shm_size: 256mb
+    environment:
+      POSTGRES_USER: ludomarkt38
+      POSTGRES_PASSWORD: ludomarkt38
+      POSTGRES_DB: ludomarkt_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    restart: always
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data-volume:/var/lib/mongo/data
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=ludomarkt38
+      - MONGO_INITDB_ROOT_PASSWORD=ludomarkt38
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    ports:
+      - '9092:9092'
+    restart: unless-stopped
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_LISTENERS=BROKER://kafka:9092,CONTROLLER://kafka:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=BROKER://kafka:9092,EXTERNAL://127.0.0.1:9094
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=BROKER
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  hazelcast:
+    image: hazelcast/hazelcast:5.5-jdk21
+    container_name: hazelcast
+    ports:
+      - "5701:5701"
+    environment:
+      - HZ_CLUSTERNAME=ludomarkt-hz
+
+volumes:
+  db:
+    driver: local
+  mongo-data-volume:
+    driver: local

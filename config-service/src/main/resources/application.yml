@@ -1,0 +1,53 @@
+info:
+  description: Config Server
+
+server:
+  port: ${PORT:8888}
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/shared
+  security:
+    user:
+      name: ${CONFIG_SERVER_USERNAME:user}
+      password: ${CONFIG_SERVER_PASSWORD:12345}
+
+management:
+  security:
+    enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+---
+
+server:
+  port: ${PORT:8080}
+spring:
+  config:
+    activate:
+      on-profile: stable
+---
+
+server:
+  port: ${PORT:8080}
+spring:
+  config:
+    activate:
+      on-profile: prp
+---
+
+server:
+  port: ${PORT:8080}
+spring:
+  config:
+    activate:
+      on-profile: prod

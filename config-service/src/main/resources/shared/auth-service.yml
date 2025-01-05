@@ -1,0 +1,74 @@
+info:
+  component: auth-service
+
+server:
+  port: ${PORT:9003}
+  servlet:
+    context-path: ${CONTEXT_PATH:/auth-api}
+
+spring:
+  jpa:
+    open-in-view: false
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+  datasource:
+    url: jdbc:postgresql://${POSTGRE_HOST:localhost}:${POSTGRE_PORT:5432}/postgres?currentSchema={POSTGRE_SCHEMA:auth}&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${POSTGRE_USERNAME:ludomarkt38}
+    password: ${POSTGRE_PASSWORD:ludomarkt38}
+    driver-class-name: org.postgresql.Driver
+    platform: postgres
+    initialization-mode: always
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${KAFKA_BROKERS:kafka:9092}
+
+config-jwt:
+  enabled: true
+  secret: 'E75B7ACCC444315D99871EA49B89F3DB4DF2CA032061DE737F45991C91BFF5B3'
+  expiration: ${CONFIG_JWT_CACHE_EXPIRATION:60}
+  expiration-refresh-token: ${CONFIG_JWT_CACHE_EXPIRATION_REFRESH_TOKEN:90}
+  cache:
+    type: ${CONFIG_JWT_CACHE_TYPE:default}
+
+reset:
+  password:
+    expiry:
+      code: ${SECOND_EXPIRY:200}
+      link: ${SECOND_EXPIRY:10800}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stable
+
+server:
+  port: ${PORT:8080}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prp
+
+server:
+  port: ${PORT:8080}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: ${PORT:8080}
