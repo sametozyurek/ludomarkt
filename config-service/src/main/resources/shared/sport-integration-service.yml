@@ -1,0 +1,61 @@
+info:
+  component: sport-integration-service
+
+server:
+  port: ${PORT:9004}
+  servlet:
+    context-path: ${CONTEXT_PATH:/sport-integration-api}
+
+spring:
+  jpa:
+    open-in-view: false
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+  datasource:
+    url: jdbc:postgresql://${POSTGRE_HOST:localhost}:${POSTGRE_PORT:5432}/postgres?currentSchema={POSTGRE_SCHEMA:sport-integration}&binaryTransfer=true&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${POSTGRE_USERNAME:ludomarkt38}
+    password: ${POSTGRE_PASSWORD:ludomarkt38}
+    driver-class-name: org.postgresql.Driver
+    platform: postgres
+    initialization-mode: always
+  data.mongodb.uri: mongodb://${MONGODB_USERNAME:ludomarkt38}:${MONGODB_PASSWORD:ludomarkt38}@${MONGODB_HOST:localhost}:27017/sport-integration-service?authSource=admin&readPreference=primary&directConnection=true&ssl=false
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: ${KAFKA_BROKERS:kafka:9092}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stable
+
+server:
+  port: ${PORT:8080}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prp
+
+server:
+  port: ${PORT:8080}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: ${PORT:8080}

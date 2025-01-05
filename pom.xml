@@ -25,6 +25,7 @@
         <module>auth-service</module>
         <module>config-service</module>
         <module>gateway</module>
+        <module>sport-integration-service</module>
     </modules>
     <scm>
         <connection/>
